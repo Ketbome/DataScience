@@ -73,31 +73,42 @@ X_test_scaled = scaler.transform(X_test)
 # GridSearch
 
 
-def build_regressor(optimizer, neurons, num_layers):
+def build_regressor(optimizer, neurons1, neurons2, num_layers):
     regressor = Sequential()
+    # Capa de entrada X_train_scaled.shape[1] = 9
     regressor.add(
-        Dense(neurons, input_dim=X_train_scaled.shape[1], activation='relu'))
+        Dense(X_train_scaled.shape[1], input_dim=X_train_scaled.shape[1], activation='relu'))
+    # Capa oculta con n capas
     for i in range(num_layers):
-        regressor.add(Dense(neurons, activation='relu'))
-        regressor.add(Dropout(0.2))
+        if i == 1:
+            regressor.add(Dense(neurons1, activation='relu'))
+            regressor.add(Dropout(0.2))
+        elif i == 2:
+            regressor.add(Dense(neurons2, activation='relu'))
+            regressor.add(Dropout(0.2))
     regressor.add(Dense(1))
-    regressor.add(Activation('sigmoid'))
     regressor.compile(optimizer=optimizer,
-                      loss='binary_crossentropy', metrics=['accuracy'])
+                      loss='mae', metrics=['mse'])
     return regressor
 
 
 param_grid = {
-    'neurons': [64],
-    'num_layers': [0, 1],
-    'optimizer': ['adam', 'rmsprop'],
-    'batch_size': [512],
+    'neurons1': [64],  # [64, 128, 256, 512]
+    'neurons2': [32],  # [32, 64, 128, 256, 512]
+    'num_layers': [1],
+    'optimizer': ['adam'],
+    # [64, 128, 288, 424, 512, 1024] Cantidad de datos que se procesan antes de actualizar los pesos
+    'batch_size': [1024],
+    'validation_split': [0.3]
 }
+# 4 * 3 * 2 * 1 * 6 = 144
 
-model = KerasRegressor(build_fn=build_regressor, verbose=1, epochs=10)
+model = KerasRegressor(build_fn=build_regressor, verbose=1, epochs=15)
 
 grid_search = GridSearchCV(
-    estimator=model, param_grid=param_grid, cv=3, n_jobs=1)
+    estimator=model, param_grid=param_grid, cv=1, n_jobs=1)
+
+# 144 * 3 * 15 = 6480
 
 # Entrenamiento
 grid_search = grid_search.fit(X_train_scaled, y_train)
@@ -108,3 +119,23 @@ best_parameters = grid_search.best_params_
 print("Mejores parámetros: ", best_parameters)
 
 # Imprimir el mejor accuracy
+
+
+# Crear la carpeta 'resultados' si no existe
+if not os.path.exists('resultados'):
+    os.makedirs('resultados')
+
+# Entrenamiento y obtención de los mejores parámetros
+grid_search = grid_search.fit(X_train_scaled, y_train)
+best_parameters = grid_search.best_params_
+
+# Abrir un archivo para guardar los resultados
+with open('resultados/resultados_grid.txt', 'w') as file:
+    # Imprimir los mejores parámetros en el archivo
+    print("Mejores parámetros: ", best_parameters, file=file)
+    # Aquí puedes agregar cualquier otra información que desees guardar
+
+# Guardar modelo
+model = grid_search.best_estimator_.model
+model.save('resultados/modelo.h5')
+model.save('resultados/modelo')  # Guardar modelo en formato SavedModel
