@@ -1,0 +1,8 @@
+Columnas usadas: ['COD_COM_RBD', 'COD_DEPE2', 'COD_ENSE2', 'GEN_ALU', 'EDAD_ALU', 'ASISTENCIA', 'CURSO']
+MAE: 0.3903456571492518
+MSE: 0.2592676391388344
+R2: 0.2828022865946648
+Parametros usados:
+units1: 288
+layers: 1
+learning_rate: 0.01
