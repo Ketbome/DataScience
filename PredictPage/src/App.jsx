@@ -7,12 +7,12 @@ import Autocomplete from '@mui/material/Autocomplete';
 import data from './data.json';
 import useStore from './store';
 import Button from '@mui/material/Button';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SendIcon from '@mui/icons-material/Send';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import InputIcon from '@mui/icons-material/Input';
+import { Slider } from '@mui/material';
+import { Box } from '@mui/material';
+import backgroundImage from './assets/background.jpg';
+import { Typography } from '@mui/material';
 
 export default function App() {
   const { comuna, dependencia, genero, curso, age, setComuna, asistencia, setDependencia, setGenero, setEnseñanza, setCursos, setCurso, setAge, setAsistencia } = useStore();
@@ -38,9 +38,11 @@ export default function App() {
   }, [enseñanza]);
 
   return (
-    <div className='App'>
+    <div className='App' style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', height: '100vh', width: '100vw', marginTop: '' }}>
+      <div style={{ paddingTop: '23vh' }}>
       <Container maxWidth='sm'>
-        <Grid container spacing={2} columns={16} maxWidth={600} marginTop={{marginTop: '25vh'}}>
+        <Box sx={{ bgcolor: '#ffffff', boxShadow: 16, p: 2, borderRadius: 0, overflow: 'hidden'}}>
+          <Grid container spacing={2} columns={16} maxWidth={600}>
           <Grid item xs={8}>
             <Autocomplete
               disablePortal
@@ -116,23 +118,27 @@ export default function App() {
           />
           </Grid>
           <Grid item xs={6}>
-          <Autocomplete
-            id="asistencia"
-            options={Array.from({ length: 101 }, (_, i) => i)}
-            getOptionLabel={(option) => option.toString()}
-            renderInput={(params) => <TextField {...params} label="Asistencia (%)" required />}
+          <Typography id="asistencia-slider" gutterBottom>
+            Asistencia (%)
+          </Typography>
+          <Slider
             value={asistencia}
+            aria-label="Asistencia"
+            valueLabelDisplay="auto"
+            min={10}
+            max={100}
+            step={1}
             onChange={(event, newValue) => {
               setAsistencia(newValue);
             }}
           />
           </Grid>
         </Grid>
-        <Grid container spacing={2} columns={16} maxWidth={600} marginTop={2} justifyContent={'center'}>
-        <Grid item xs={4}>
+        <Grid container spacing={2} columns={2} maxWidth={600} paddingTop={2}>
+          <Grid item xs={6} container justifyContent="center">
             <Button 
               variant="outlined" 
-              startIcon={<DeleteIcon />}
+              startIcon={<RestartAltIcon />}
               onClick={() => {
                 setComuna(null);
                 setDependencia(null);
@@ -140,19 +146,21 @@ export default function App() {
                 setEnseñanza(null);
                 setCurso(null);
                 setAge(null);
-                setAsistencia(null);
+                setAsistencia(50);
               }}
             >
-              Delete
+              Restaurar
             </Button>
           </Grid>
-          <Grid item xs={4}>
-          <Button variant="contained" endIcon={<SendIcon />}>
-              Send
+          <Grid item xs={6} container justifyContent="center">
+          <Button variant="contained" endIcon={<InputIcon />}>
+              Predecir
             </Button>
           </Grid>
         </Grid>
+        </Box>
       </Container>
+      </div>
     </div>
   );
 }
