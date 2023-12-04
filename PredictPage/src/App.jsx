@@ -40,15 +40,16 @@ export default function App() {
   return (
     <div className='App'>
       <Container maxWidth='sm'>
-        <Grid container spacing={2} columns={16} maxWidth={600} marginTop={25}>
+        <Grid container spacing={2} columns={16} maxWidth={600} marginTop={{marginTop: '25vh'}}>
           <Grid item xs={8}>
             <Autocomplete
               disablePortal
               id='comuna'
               options={data.comunas}
               getOptionLabel={(option) => option.name}
+              value={comuna}
               onChange={(event, newValue) => setComuna(newValue ? newValue : { id: null, name: '' })}
-              renderInput={(params) => <TextField {...params} label='Comuna' />}
+              renderInput={(params) => <TextField {...params} label='Comuna' required/>}
               required
             />
           </Grid>
@@ -58,8 +59,9 @@ export default function App() {
               id='dependencia'
               options={data.dependencia}
               getOptionLabel={(option) => option.name}
+              value={dependencia}
               onChange={(event, newValue) => setDependencia(newValue ? newValue : { id: null, name: '' })}
-              renderInput={(params) => <TextField {...params} label='Dependencia' />}
+              renderInput={(params) => <TextField {...params} label='Dependencia' required/>}
               required
             />
           </Grid>
@@ -69,11 +71,12 @@ export default function App() {
             id='enseñanza'
             options={data.enseñanza}
             getOptionLabel={(option) => option.name}
+            value={enseñanza}
             onChange={(event, newValue) => {
               setEnseñanza(newValue ? newValue : { id: null, name: '' });
               setCurso(null); // Resetea curso cuando enseñanza cambia
             }}
-            renderInput={(params) => <TextField {...params} label='Enseñanza' />}
+            renderInput={(params) => <TextField {...params} label='Enseñanza' required/>}
             required
           />
           </Grid>
@@ -85,7 +88,7 @@ export default function App() {
               getOptionLabel={(option) => option.name}
               value={curso}
               onChange={(event, newValue) => setCurso(newValue ? newValue : { id: null, name: '' })}
-              renderInput={(params) => <TextField {...params} label='Curso' />}
+              renderInput={(params) => <TextField {...params} label='Curso' required/>}
               required
             />
           </Grid>
@@ -95,57 +98,55 @@ export default function App() {
               id='genero'
               options={data.genero}
               getOptionLabel={(option) => option.name}
+              value={genero}
               onChange={(event, newValue) => setGenero(newValue ? newValue : { id: null, name: '' })}
-              renderInput={(params) => <TextField {...params} label='Genero' />}
-              required
+              renderInput={(params) => <TextField {...params} label='Genero' required/>}
             />
           </Grid>
           <Grid item xs={4}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Age</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Age"
-                value={age}
-                onChange={handleChange}
-                required
-              >
-                {Array.from({ length: 15 }, (_, i) => i + 4).map((edad) => (
-                  <MenuItem key={edad} value={edad}>
-                    {edad}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+          <Autocomplete
+            id="age"
+            options={Array.from({ length: 15 }, (_, i) => i + 4)}
+            getOptionLabel={(option) => option.toString()}
+            renderInput={(params) => <TextField {...params} label="Edad" required />}
+            value={age}
+            onChange={(event, newValue) => {
+              setAge(newValue);
+            }}
+          />
           </Grid>
           <Grid item xs={6}>
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Asistencia (%)</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Asistencia (%)"
-                value={asistencia}
-                onChange={(event) => setAsistencia(event.target.value)}
-                required
-              >
-                {Array.from({ length: 101 }, (_, i) => i).map((porcentaje) => (
-                  <MenuItem key={porcentaje} value={porcentaje}>
-                    {porcentaje}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+          <Autocomplete
+            id="asistencia"
+            options={Array.from({ length: 101 }, (_, i) => i)}
+            getOptionLabel={(option) => option.toString()}
+            renderInput={(params) => <TextField {...params} label="Asistencia (%)" required />}
+            value={asistencia}
+            onChange={(event, newValue) => {
+              setAsistencia(newValue);
+            }}
+          />
           </Grid>
         </Grid>
-        <Grid container spacing={2} columns={16} maxWidth={600} marginTop={25}>
-        <Grid item xs={8}>
-            <Button variant="outlined" startIcon={<DeleteIcon />}>
+        <Grid container spacing={2} columns={16} maxWidth={600} marginTop={2} justifyContent={'center'}>
+        <Grid item xs={4}>
+            <Button 
+              variant="outlined" 
+              startIcon={<DeleteIcon />}
+              onClick={() => {
+                setComuna(null);
+                setDependencia(null);
+                setGenero(null);
+                setEnseñanza(null);
+                setCurso(null);
+                setAge(null);
+                setAsistencia(null);
+              }}
+            >
               Delete
             </Button>
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={4}>
           <Button variant="contained" endIcon={<SendIcon />}>
               Send
             </Button>

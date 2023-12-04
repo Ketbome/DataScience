@@ -1,13 +1,13 @@
 import { create } from 'zustand'
 
 const useStore = create((set) => ({
-    comuna: { id: null, name: '' },
-    dependencia: { id: null, name: '' },
-    enseñanza: { id: null, name: '' },
-    curso: { id: null, name: '' },
-    genero: { id: null, name: '' },
-    age: 4,
-    asistencia: 0,
+    comuna: null,
+    dependencia: null,
+    enseñanza: null,
+    curso: null,
+    genero: null,
+    age: null,
+    asistencia: null,
     cursos: [],
     setComuna: (comuna) => set({ comuna }),
     setDependencia: (dependencia) => set({ dependencia }),
