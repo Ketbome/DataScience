@@ -13,11 +13,52 @@ import { Slider } from '@mui/material';
 import { Box } from '@mui/material';
 import backgroundImage from './assets/background.jpg';
 import { Typography } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import Confetti from 'react-confetti';
+import EmogiRain from './function/emogiRain';
+import { useReward } from 'react-rewards';
+
 
 export default function App() {
-  const { comuna, dependencia, genero, curso, age, setComuna, asistencia, setDependencia, setGenero, setEnseñanza, setCursos, setCurso, setAge, setAsistencia } = useStore();
+  const { comuna, dependencia, prediction, genero, open, curso, age, setComuna, asistencia, setPrediction, setDependencia, setOpen, setGenero, setEnseñanza, setCursos, setCurso, setAge, setAsistencia } = useStore();
   const enseñanza = useStore(state => state.enseñanza);
   const cursos = useStore(state => state.cursos);
+  const allFieldsFilled = comuna && dependencia && genero && enseñanza && curso && age && asistencia;
+
+  const {reward: emojiReward, isAnimating: isEmojiAnimating} = useReward('emojiReward', 'emoji', {
+    lifetime: 300, // duration of the animation in milliseconds
+  });
+
+  const handleSubmit = async () => {  
+    const response = await fetch('http://localhost:5000/predict', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        input: {
+          comuna: comuna.id,
+          dependencia: dependencia.id,
+          genero: genero.id,
+          enseñanza: enseñanza.id,
+          curso: curso.id,
+          age: age,
+          asistencia: asistencia,
+        },
+      }),
+    });
+  
+    setPrediction(await response.json());
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const filtrarCursos = () => {
     if (enseñanza && enseñanza.id == 2) {
@@ -28,21 +69,17 @@ export default function App() {
       setCursos([]);
     }
   };
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
   
   useEffect(() => {
     filtrarCursos();
   }, [enseñanza]);
 
   return (
-    <div className='App' style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', height: '100vh', width: '100vw', marginTop: '' }}>
-      <div style={{ paddingTop: '23vh' }}>
-      <Container maxWidth='sm'>
+    <div className='App' style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', height: '100vh', width: '100vw' }}>
+      <div style={{ paddingTop: '30vh' }}>
+      <Container maxWidth='md' >
         <Box sx={{ bgcolor: '#ffffff', boxShadow: 16, p: 2, borderRadius: 0, overflow: 'hidden'}}>
-          <Grid container spacing={2} columns={16} maxWidth={600}>
+          <Grid container spacing={2} columns={16} >
           <Grid item xs={8}>
             <Autocomplete
               disablePortal
@@ -134,32 +171,58 @@ export default function App() {
           />
           </Grid>
         </Grid>
-        <Grid container spacing={2} columns={2} maxWidth={600} paddingTop={2}>
+        <Grid container spacing={2} columns={2} maxWidth={1200} paddingTop={2}>
           <Grid item xs={6} container justifyContent="center">
-            <Button 
-              variant="outlined" 
-              startIcon={<RestartAltIcon />}
-              onClick={() => {
-                setComuna(null);
-                setDependencia(null);
-                setGenero(null);
-                setEnseñanza(null);
-                setCurso(null);
-                setAge(null);
-                setAsistencia(50);
-              }}
-            >
-              Restaurar
-            </Button>
+              <Button 
+                variant="outlined" 
+                startIcon={<RestartAltIcon />}
+                disabled={isEmojiAnimating}
+                onClick={() => {
+                  setComuna(null);
+                  setDependencia(null);
+                  setGenero(null);
+                  setEnseñanza(null);
+                  setCurso(null);
+                  setAge(null);
+                  setAsistencia(50);
+                  emojiReward();
+                }}
+              >
+                <span id="emojiReward" />
+                Restaurar
+              </Button>
           </Grid>
           <Grid item xs={6} container justifyContent="center">
-          <Button variant="contained" endIcon={<InputIcon />}>
+            <Button variant="contained" endIcon={<InputIcon />} onClick={handleSubmit}  disabled={!allFieldsFilled}>
               Predecir
             </Button>
           </Grid>
         </Grid>
         </Box>
       </Container>
+      {prediction && prediction > 5.9 && <Confetti />}
+      {prediction && prediction < 4 && <EmogiRain />}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth={true}
+        keepMounted
+        maxWidth="md" 
+      >
+        <DialogTitle>
+          Prediccion de nota
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText style={{ fontSize: '2em' }}>
+            {prediction ? prediction : 'No se pudo predecir la nota'}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cerrar
+          </Button>
+        </DialogActions>
+      </Dialog>
       </div>
     </div>
   );
