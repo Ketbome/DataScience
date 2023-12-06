@@ -16,11 +16,11 @@ import { Typography } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Confetti from 'react-confetti';
 import EmogiRain from './function/emogiRain';
 import { useReward } from 'react-rewards';
+import NotaVisual from './function/nota';
 
 
 export default function App() {
@@ -76,7 +76,9 @@ export default function App() {
 
   return (
     <div className='App' style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', height: '100vh', width: '100vw' }}>
-      <div style={{ paddingTop: '30vh' }}>
+      {prediction < 4 && prediction > 1 && <EmogiRain />}
+      {prediction > 5.9 && <Confetti />}
+      <div style={{ paddingTop: '30vh', position: 'relative', zIndex: 3 }}>
       <Container maxWidth='md' >
         <Box sx={{ bgcolor: '#ffffff', boxShadow: 16, p: 2, borderRadius: 0, overflow: 'hidden'}}>
           <Grid container spacing={2} columns={16} >
@@ -176,7 +178,6 @@ export default function App() {
               <Button 
                 variant="outlined" 
                 startIcon={<RestartAltIcon />}
-                disabled={isEmojiAnimating}
                 onClick={() => {
                   setComuna(null);
                   setDependencia(null);
@@ -186,6 +187,7 @@ export default function App() {
                   setAge(null);
                   setAsistencia(50);
                   emojiReward();
+                  setPrediction(0);
                 }}
               >
                 <span id="emojiReward" />
@@ -200,22 +202,19 @@ export default function App() {
         </Grid>
         </Box>
       </Container>
-      {prediction && prediction > 5.9 && <Confetti />}
-      {prediction && prediction < 4 && <EmogiRain />}
       <Dialog
         open={open}
         onClose={handleClose}
-        fullWidth={true}
         keepMounted
-        maxWidth="md" 
+        BackdropProps={{ 
+          style: { backgroundColor: 'rgba(0, 0, 0, 0.25)' } 
+        }}
       >
         <DialogTitle>
           Prediccion de nota
         </DialogTitle>
         <DialogContent>
-          <DialogContentText style={{ fontSize: '2em' }}>
-            {prediction ? prediction : 'No se pudo predecir la nota'}
-          </DialogContentText>
+            <NotaVisual nota={prediction} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
