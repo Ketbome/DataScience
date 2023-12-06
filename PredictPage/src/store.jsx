@@ -10,7 +10,7 @@ const useStore = create((set) => ({
     asistencia: 50,
     cursos: [],
     open: false,
-    prediction: null,
+    prediction: 0,
     setComuna: (comuna) => set({ comuna }),
     setDependencia: (dependencia) => set({ dependencia }),
     setEnseñanza: (enseñanza) => set({ enseñanza }),
