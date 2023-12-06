@@ -9,7 +9,7 @@ const EmojiRain = () => {
     containerRef.current.style.height = `${document.documentElement.scrollHeight}px`;
     containerRef.current.style.width = `${document.documentElement.scrollWidth}px`;
 
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 10; i++) {
       addCircle(i * 300, [10 + 0, window.innerWidth], emoji[Math.floor(Math.random() * emoji.length)]);
       addCircle(i * 300, [10 + 0, -window.innerWidth], emoji[Math.floor(Math.random() * emoji.length)]);
       addCircle(i * 300, [10 - 200, -window.innerWidth], emoji[Math.floor(Math.random() * emoji.length)]);
@@ -47,7 +47,7 @@ const EmojiRain = () => {
 
       this.update = function() {
         if (_this.y > 800) {
-          _this.y = -40 + Math.random() * 4;
+          _this.y = -40 + Math.random() * 5;
           _this.x = _this.range[0] + Math.random() * _this.range[1];
         } else {
           _this.y += _this.v.y;
