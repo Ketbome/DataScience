@@ -13,6 +13,7 @@
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.19",
     "react": "latest",
+    "react-circular-progressbar": "^2.1.0",
     "react-confetti": "^6.1.0",
     "react-dom": "latest",
     "react-rewards": "^2.0.4",
