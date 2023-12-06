@@ -11,6 +11,7 @@ const useStore = create((set) => ({
     cursos: [],
     open: false,
     prediction: 0,
+    edadesPermitidas: [],
     setComuna: (comuna) => set({ comuna }),
     setDependencia: (dependencia) => set({ dependencia }),
     setEnseñanza: (enseñanza) => set({ enseñanza }),
@@ -21,6 +22,7 @@ const useStore = create((set) => ({
     setCursos: (cursos) => set({ cursos }),
     setOpen: (open) => set({ open }),
     setPrediction: (prediction) => set({ prediction }),
+    setEdadesPermitidas: (edadesPermitidas) => set({ edadesPermitidas }),
 }));
 
 export default useStore;

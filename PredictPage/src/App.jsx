@@ -23,8 +23,23 @@ import { useReward } from 'react-rewards';
 import NotaVisual from './function/nota';
 
 
+const cursoEdades = {
+  1: [5, 6, 7],
+  2: [6, 7, 8],
+  3: [7, 8, 9],
+  4: [8, 9, 10],
+  5: [9, 10, 11],
+  6: [10, 11, 12],
+  7: [11, 12, 13],
+  8: [12, 13, 14],
+  9: [13, 14, 15],
+  10: [14, 15, 16],
+  11: [15, 16, 17],
+  12: [16, 17, 18],
+};
+
 export default function App() {
-  const { comuna, dependencia, prediction, genero, open, curso, age, setComuna, asistencia, setPrediction, setDependencia, setOpen, setGenero, setEnseñanza, setCursos, setCurso, setAge, setAsistencia } = useStore();
+  const { comuna, dependencia, prediction, edadesPermitidas, genero, open, curso, age, setComuna, setEdadesPermitidas, asistencia, setPrediction, setDependencia, setOpen, setGenero, setEnseñanza, setCursos, setCurso, setAge, setAsistencia } = useStore();
   const enseñanza = useStore(state => state.enseñanza);
   const cursos = useStore(state => state.cursos);
   const allFieldsFilled = comuna && dependencia && genero && enseñanza && curso && age && asistencia;
@@ -32,6 +47,14 @@ export default function App() {
   const {reward: emojiReward, isAnimating: isEmojiAnimating} = useReward('emojiReward', 'emoji', {
     lifetime: 300, // duration of the animation in milliseconds
   });
+
+  const filtrarEdades = () => {
+    if (curso) {
+      setEdadesPermitidas(cursoEdades[curso.id]);
+    } else {
+      setEdadesPermitidas([]);
+    }
+  };
 
   const handleSubmit = async () => {  
     const response = await fetch('http://localhost:5000/predict', {
@@ -74,11 +97,15 @@ export default function App() {
     filtrarCursos();
   }, [enseñanza]);
 
+  useEffect(() => {
+    filtrarEdades();
+  }, [curso]);
+
   return (
     <div className='App' style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', height: '100vh', width: '100vw' }}>
-      {prediction < 4 && prediction > 1 && <EmogiRain />}
+      {prediction < 4.9 && prediction > 1 && <EmogiRain />}
       {prediction > 5.9 && <Confetti />}
-      <div style={{ paddingTop: '30vh', position: 'relative', zIndex: 3 }}>
+      <div style={{ paddingTop: '30vh', position: 'relative', zIndex: 2 }}>
       <Container maxWidth='md' >
         <Box sx={{ bgcolor: '#ffffff', boxShadow: 16, p: 2, borderRadius: 0, overflow: 'hidden'}}>
           <Grid container spacing={2} columns={16} >
@@ -116,6 +143,8 @@ export default function App() {
             onChange={(event, newValue) => {
               setEnseñanza(newValue ? newValue : { id: null, name: '' });
               setCurso(null); // Resetea curso cuando enseñanza cambia
+              setEdadesPermitidas([]); // Resetea edades cuando enseñanza cambia
+              setAge(null); // Resetea edad cuando enseñanza cambia
             }}
             renderInput={(params) => <TextField {...params} label='Enseñanza' required/>}
             required
@@ -128,7 +157,11 @@ export default function App() {
               options={cursos}
               getOptionLabel={(option) => option.name}
               value={curso}
-              onChange={(event, newValue) => setCurso(newValue ? newValue : { id: null, name: '' })}
+              onChange={(event, newValue) => {
+                setCurso(newValue ? newValue : { id: null, name: '' });
+                filtrarEdades();  
+                setAge(null); // Resetea edad cuando curso cambia            
+              }}
               renderInput={(params) => <TextField {...params} label='Curso' required/>}
               required
             />
@@ -147,7 +180,7 @@ export default function App() {
           <Grid item xs={4}>
           <Autocomplete
             id="age"
-            options={Array.from({ length: 15 }, (_, i) => i + 4)}
+            options={edadesPermitidas}
             getOptionLabel={(option) => option.toString()}
             renderInput={(params) => <TextField {...params} label="Edad" required />}
             value={age}
