@@ -25,7 +25,7 @@ jobs:
       - name: Run Flask application (optional)
         run: |
           cd Api
-          python app.py &
+          python api.py &
 
       - name: Build and deploy frontend
         run: |
