@@ -1,17 +1,20 @@
 {
+  "homepage":"https://ketbome.github.io/DataScience",
   "name": "material-ui-vite",
   "version": "5.0.0",
   "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.19",
+    "gh-pages": "^6.1.0",
     "react": "latest",
     "react-circular-progressbar": "^2.1.0",
     "react-confetti": "^6.1.0",
